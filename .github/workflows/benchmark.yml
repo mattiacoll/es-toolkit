@@ -46,12 +46,20 @@ jobs:
           node-version-file: .nvmrc
           cache: 'yarn'
       - run: yarn install
+      - name: List all changed files
+        env:
+          BENCH_CHANGED_FILES: ${{ needs.benchmark.outputs.changed_files }}
+        run: |
+          echo "Any benchmark changed?" BENCH_ANY_CHANGED
+          for file in ${BENCH_CHANGED_FILES}; do
+            echo "$file was changed"
+          done
       - name: Run benchmark if test file(s) change
         id: benchmark-run
         env:
           BENCH_CHANGED_FILES: ${{ needs.benchmark.outputs.changed_files }}
         run: |
-          yarn bench: $BENCH_CHANGED_FILES --run
+          yarn bench $BENCH_CHANGED_FILES --run
       - name: Comment on PR
         uses: wow-actions/auto-comment@v1
         with:
