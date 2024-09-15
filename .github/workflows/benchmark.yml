@@ -36,7 +36,7 @@ jobs:
         env:
           ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
           BENCH_CHANGED_FILES: ${{ steps.benchmark-files.outputs.all_changed_files }}
-          BENCH_T_CHANGED_FILES: ${{ steps.changed-files.outputs.test_all_changed_files }}
+          BENCH_T_CHANGED_FILES: ${{ steps.changed-files.outputs.any_changed }}
         run: |
           for file in ${ALL_CHANGED_FILES}; do
             echo "$file was changed"
@@ -48,19 +48,19 @@ jobs:
 
       - name: Run benchmark if test file(s) change
         id: benchmark-run
-        if: steps.benchmark-files.outputs.test_any_changed == 'true'
+        if: steps.benchmark-files.outputs.any_changed == 'true'
         env:
-          TEST_ALL_CHANGED_FILES: ${{ steps.benchmark-files.outputs.test_all_changed_files }}
+          BENCHMARK_CHANGED_FILES: ${{ steps.benchmark-files.outputs.all_changed_files }}
         run: |
-          yarn bench: $TEST_ALL_CHANGED_FILES --run
+          yarn bench: $BENCHMARK_CHANGED_FILES --run
       - name: Comment on PR
         uses: wow-actions/auto-comment@v1
         if: steps.benchmark-files.outputs.test_any_changed == 'true'
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           pullRequestOpened: |
-            New benchmark found: $TEST_ALL_CHANGED_FILES, test result:
+            New benchmark found: $BENCHMARK_CHANGED_FILES, test result:
             ${{ join(steps.benchmark-run.outputs.*, '\n') }}
           pullRequestEdited: |
-            New benchmark found: $TEST_ALL_CHANGED_FILES, test result:
+            New benchmark found: $BENCHMARK_CHANGED_FILES, test result:
             ${{ join(steps.benchmark-run.outputs.*, '\n') }}
