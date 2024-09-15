@@ -20,9 +20,9 @@ jobs:
         id: benchmark-files
         uses: tj-actions/changed-files@v45
         with:
-          files_yaml: |
+          files: |
             benchmarks:
-              - '**.ts'
+              - benchmark/**
       - name: Run benchmark if test file(s) change
         id: benchmark-run
         if: steps.benchmark-files.outputs.test_any_changed == 'true'
@@ -32,6 +32,7 @@ jobs:
           yarn bench: $TEST_ALL_CHANGED_FILES --run
       - name: Comment on PR
         uses: wow-actions/auto-comment@v1
+        if: steps.benchmark-files.outputs.test_any_changed == 'true'
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           pullRequestOpened: |
