@@ -16,7 +16,6 @@ jobs:
           node-version-file: .nvmrc
           cache: 'yarn'
       - run: yarn install
-      - run: yarn test
       - name: Get benchmark files
         id: benchmark-files
         uses: tj-actions/changed-files@v45
