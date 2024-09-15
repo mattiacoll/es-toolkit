@@ -37,7 +37,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           pullRequestOpened: |
             New benchmark found: $TEST_ALL_CHANGED_FILES, test result:
-            ${{ join(steps.benchmark-run.outputs.*), '\n' }}
+            ${{ join(steps.benchmark-run.outputs.*, '\n') }}
           pullRequestEdited: |
             New benchmark found: $TEST_ALL_CHANGED_FILES, test result:
-            ${{ join(steps.benchmark-run.outputs.*), '\n' }}
+            ${{ join(steps.benchmark-run.outputs.*, '\n') }}
