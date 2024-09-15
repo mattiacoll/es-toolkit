@@ -3,7 +3,7 @@ import { after as afterToolkit } from 'es-toolkit';
 import { after as afterLodash } from 'lodash';
 
 describe('after', () => {
-  bench('es-toolkit/aftereee', () => {
+  bench('es-toolkit/after', () => {
     const add = (a: number, b: number) => a + b;
     const n = 10;
     const afterFn = afterToolkit(n, add);

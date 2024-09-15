@@ -16,57 +16,42 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: corepack enable
-      - uses: actions/setup-node@v4
-        with:
-          node-version-file: .nvmrc
-          cache: 'yarn'
-      - run: yarn install
-      - name: Get changed files
-        id: changed-files
-        uses: tj-actions/changed-files@v45
-
+      
       - name: Get benchmark files
         id: benchmark-files
         uses: tj-actions/changed-files@v45
         with:
           files: benchmarks/**
-
       - name: List all changed files
         env:
-          ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
           BENCH_CHANGED_FILES: ${{ steps.benchmark-files.outputs.all_changed_files }}
-          ALL_T_CHANGED_FILES: ${{ steps.changed-files.outputs.any_changed }}
-          BENCH_T_CHANGED_FILES: ${{ steps.benchmark-files.outputs.any_changed }}
-          BENCH_TF_CHANGED_FILES: ${{ steps.benchmark-files.outputs.files_any_changed }}
+          BENCH_ANY_CHANGED: ${{ steps.benchmark-files.outputs.any_changed }}
         run: |
-          for file in ${ALL_CHANGED_FILES}; do
+          echo "Any benchmark changed?" BENCH_ANY_CHANGED
+          for file in ${BENCH_CHANGED_FILES}; do
             echo "$file was changed"
           done
-          for file in ${BENCH_CHANGED_FILES}; do
-            echo "$file in BENCH_CHANGED_FILES was changed"
-          done
-          echo ALL_T_CHANGED_FILES
-          echo BENCH_T_CHANGED_FILES
-          echo BENCH_TF_CHANGED_FILES
-          echo "---"
-          echo ${{ steps.benchmark-files.outputs }}
-
-#      - name: Run benchmark if test file(s) change
-#        id: benchmark-run
-#        if: steps.benchmark-files.outputs.any_changed == 'true'
-#        env:
-#          BENCHMARK_CHANGED_FILES: ${{ steps.benchmark-files.outputs.all_changed_files }}
-#        run: |
-#          yarn bench: $BENCHMARK_CHANGED_FILES --run
-#      - name: Comment on PR
-#        uses: wow-actions/auto-comment@v1
-#        if: steps.benchmark-files.outputs.test_any_changed == 'true'
-#        with:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#          pullRequestOpened: |
-#            New benchmark found: $BENCHMARK_CHANGED_FILES, test result:
-#            ${{ join(steps.benchmark-run.outputs.*, '\n') }}
-#          pullRequestEdited: |
-#            New benchmark found: $BENCHMARK_CHANGED_FILES, test result:
-#            ${{ join(steps.benchmark-run.outputs.*, '\n') }}
+      - if: steps.benchmark-files.outputs.any_changed == 'true'
+        - run: corepack enable
+        - uses: actions/setup-node@v4
+          with:
+            node-version-file: .nvmrc
+            cache: 'yarn'
+        - run: yarn install
+        - name: Run benchmark if test file(s) change
+          id: benchmark-run
+          env:
+            BENCH_CHANGED_FILES: ${{ steps.benchmark-files.outputs.all_changed_files }}
+          run: |
+            yarn bench: $BENCH_CHANGED_FILES --run
+        - name: Comment on PR
+          uses: wow-actions/auto-comment@v1
+          if: steps.benchmark-files.outputs.test_any_changed == 'true'
+          with:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            pullRequestOpened: |
+              New benchmark found: $BENCHMARK_CHANGED_FILES, test result:
+              ${{ join(steps.benchmark-run.outputs.*, '\n') }}
+            pullRequestEdited: |
+              New benchmark found: $BENCHMARK_CHANGED_FILES, test result:
+              ${{ join(steps.benchmark-run.outputs.*, '\n') }}
