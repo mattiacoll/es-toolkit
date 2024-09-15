@@ -11,7 +11,7 @@ describe('after', () => {
       afterFn(1, 2);
     }
   });
-
+ 
   bench('lodash/after', () => {
     const add = (a: number, b: number) => a + b;
     const n = 10;
