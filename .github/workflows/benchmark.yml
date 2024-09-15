@@ -25,15 +25,19 @@ jobs:
             benchmarks:
               - '**.ts'
       - name: Run benchmark if test file(s) change
+        id: benchmark-run
         if: steps.benchmark-files.outputs.test_any_changed == 'true'
         env:
           TEST_ALL_CHANGED_FILES: ${{ steps.benchmark-files.outputs.test_all_changed_files }}
+        run:
+          yarn bench: $TEST_ALL_CHANGED_FILES --run
+      - name: Comment on PR
         uses: wow-actions/auto-comment@v1
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           pullRequestOpened: |
-              New benchmark found: $TEST_ALL_CHANGED_FILES, test result:
-              ${{ yarn bench: $TEST_ALL_CHANGED_FILES --run }}
+            New benchmark found: $TEST_ALL_CHANGED_FILES, test result:
+            ${{ join(steps.benchmark-run.outputs.*), '\n' }}
           pullRequestEdited: |
-              New benchmark found: $TEST_ALL_CHANGED_FILES, test result:
-              ${{ yarn bench: $TEST_ALL_CHANGED_FILES --run }}
+            New benchmark found: $TEST_ALL_CHANGED_FILES, test result:
+            ${{ join(steps.benchmark-run.outputs.*), '\n' }}
