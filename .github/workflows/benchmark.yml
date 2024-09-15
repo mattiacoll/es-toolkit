@@ -22,7 +22,7 @@ jobs:
         with:
           files: |
             benchmarks:
-              - benchmark/**
+              - benchmarks/**
       - name: Run benchmark if test file(s) change
         id: benchmark-run
         if: steps.benchmark-files.outputs.test_any_changed == 'true'
