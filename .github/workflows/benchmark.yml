@@ -29,7 +29,7 @@ jobs:
         if: steps.benchmark-files.outputs.test_any_changed == 'true'
         env:
           TEST_ALL_CHANGED_FILES: ${{ steps.benchmark-files.outputs.test_all_changed_files }}
-        run:
+        run: |
           yarn bench: $TEST_ALL_CHANGED_FILES --run
       - name: Comment on PR
         uses: wow-actions/auto-comment@v1
