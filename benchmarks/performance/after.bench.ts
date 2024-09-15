@@ -2,7 +2,7 @@ import { bench, describe } from 'vitest';
 import { after as afterToolkit } from 'es-toolkit';
 import { after as afterLodash } from 'lodash';
 
-describe('after', () => {
+describe('aftere', () => {
   bench('es-toolkit/after', () => {
     const add = (a: number, b: number) => a + b;
     const n = 10;
