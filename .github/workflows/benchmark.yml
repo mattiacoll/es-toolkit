@@ -16,13 +16,32 @@ jobs:
           node-version-file: .nvmrc
           cache: 'yarn'
       - run: yarn install
+      - name: Get changed files
+        id: changed-files
+        uses: tj-actions/changed-files@v45
+
       - name: Get benchmark files
         id: benchmark-files
         uses: tj-actions/changed-files@v45
         with:
-          files: |
-            benchmarks:
-              - benchmarks/**
+          files: benchmarks/**
+
+      - name: List all changed files
+        env:
+          ALL_CHANGED_FILES: ${{ steps.changed-files.outputs.all_changed_files }}
+          BENCH_CHANGED_FILES: ${{ steps.benchmark-files.outputs.all_changed_files }}
+          BENCH_T_CHANGED_FILES: ${{ steps.changed-files.outputs.test_all_changed_files }}
+        run: |
+          for file in ${ALL_CHANGED_FILES}; do
+            echo "$file was changed"
+          done
+          for file in ${BENCH_CHANGED_FILES}; do
+            echo "$file in BENCH_CHANGED_FILES was changed"
+          done
+          for file in ${BENCH_T_CHANGED_FILES}; do
+            echo "$file in BENCH_T_CHANGED_FILES was changed"
+          done
+
       - name: Run benchmark if test file(s) change
         id: benchmark-run
         if: steps.benchmark-files.outputs.test_any_changed == 'true'
