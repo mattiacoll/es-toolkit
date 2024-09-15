@@ -31,27 +31,29 @@ jobs:
           for file in ${BENCH_CHANGED_FILES}; do
             echo "$file was changed"
           done
+  run_bench:
+    runs-on: ubuntu-latest
+    steps:
       - if: steps.benchmark-files.outputs.any_changed == 'true'
-        - run: corepack enable
-        - uses: actions/setup-node@v4
-          with:
-            node-version-file: .nvmrc
-            cache: 'yarn'
-        - run: yarn install
-        - name: Run benchmark if test file(s) change
-          id: benchmark-run
-          env:
-            BENCH_CHANGED_FILES: ${{ steps.benchmark-files.outputs.all_changed_files }}
-          run: |
-            yarn bench: $BENCH_CHANGED_FILES --run
-        - name: Comment on PR
-          uses: wow-actions/auto-comment@v1
-          if: steps.benchmark-files.outputs.test_any_changed == 'true'
-          with:
-            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-            pullRequestOpened: |
-              New benchmark found: $BENCHMARK_CHANGED_FILES, test result:
-              ${{ join(steps.benchmark-run.outputs.*, '\n') }}
-            pullRequestEdited: |
-              New benchmark found: $BENCHMARK_CHANGED_FILES, test result:
-              ${{ join(steps.benchmark-run.outputs.*, '\n') }}
+      - run: corepack enable
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: 'yarn'
+      - run: yarn install
+      - name: Run benchmark if test file(s) change
+        id: benchmark-run
+        env:
+          BENCH_CHANGED_FILES: ${{ steps.benchmark-files.outputs.all_changed_files }}
+        run: |
+          yarn bench: $BENCH_CHANGED_FILES --run
+      - name: Comment on PR
+        uses: wow-actions/auto-comment@v1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          pullRequestOpened: |
+            New benchmark found: $BENCHMARK_CHANGED_FILES, test result:
+            ${{ join(steps.benchmark-run.outputs.*, '\n') }}
+          pullRequestEdited: |
+            New benchmark found: $BENCHMARK_CHANGED_FILES, test result:
+            ${{ join(steps.benchmark-run.outputs.*, '\n') }}
