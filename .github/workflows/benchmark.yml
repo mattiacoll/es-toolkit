@@ -29,9 +29,11 @@ jobs:
         env:
           TEST_ALL_CHANGED_FILES: ${{ steps.benchmark-files.outputs.test_all_changed_files }}
         uses: wow-actions/auto-comment@v1
-        pullRequestOpened: |
-          New benchmark found: $TEST_ALL_CHANGED_FILES, test result:
-          ${{ yarn bench: $TEST_ALL_CHANGED_FILES --run }}
-        pullRequestEdited: |
-          New benchmark found: $TEST_ALL_CHANGED_FILES, test result:
-          ${{ yarn bench: $TEST_ALL_CHANGED_FILES --run }}
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          - pullRequestOpened: |
+              New benchmark found: $TEST_ALL_CHANGED_FILES, test result:
+              ${{ yarn bench: $TEST_ALL_CHANGED_FILES --run }}
+          - pullRequestEdited: |
+              New benchmark found: $TEST_ALL_CHANGED_FILES, test result:
+              ${{ yarn bench: $TEST_ALL_CHANGED_FILES --run }}
