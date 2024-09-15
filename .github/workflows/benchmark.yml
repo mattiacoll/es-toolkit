@@ -22,7 +22,6 @@ jobs:
         uses: tj-actions/changed-files@v45
         with:
           files: benchmarks/**
-
       - name: List all changed files
         env:
           BENCH_CHANGED_FILES: ${{ steps.benchmark-files.outputs.all_changed_files }}
@@ -34,9 +33,9 @@ jobs:
           done
   run_bench:
     runs-on: ubuntu-latest
+    needs: benchmark
+    if: needs.benchmark.steps.benchmark-files.outputs.any_changed == 'true'
     steps:
-      - uses: actions/checkout@v4
-      - if: steps.benchmark-files.outputs.any_changed == 'true'
       - run: corepack enable
       - uses: actions/setup-node@v4
         with:
@@ -46,7 +45,7 @@ jobs:
       - name: Run benchmark if test file(s) change
         id: benchmark-run
         env:
-          BENCH_CHANGED_FILES: ${{ steps.benchmark-files.outputs.all_changed_files }}
+          BENCH_CHANGED_FILES: ${{ needs.benchmark.steps.benchmark-files.outputs.all_changed_files }}
         run: |
           yarn bench: $BENCH_CHANGED_FILES --run
       - name: Comment on PR
