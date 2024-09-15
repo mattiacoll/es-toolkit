@@ -1,12 +1,6 @@
 name: Benchmark
 
-# on: [pull_request]
-on:
-  push:
-    branches:
-      - '*'
-    tags:
-      - 'v*.*.*'
+on: [pull_request]
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -64,12 +58,12 @@ jobs:
         uses: wow-actions/auto-comment@v1
         env:
           BENCH_CHANGED_FILES: ${{ needs.benchmark.outputs.changed_files }}
-          BENCH_RUN: ${{ join(steps.benchmark-run.outputs.*, '\n') }}
+          BENCH_RUN: "${{ join(steps.benchmark-run.outputs.*, '\n') }}"
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           pullRequestOpened: |
-            New benchmark found: $BENCHMARK_CHANGED_FILES, test result:
-            $BENCH_RUN
+            New benchmark found: ${{ BENCHMARK_CHANGED_FILES }}, test result:
+            ${{ BENCH_RUN }}
           pullRequestEdited: |
-            New benchmark found: $BENCHMARK_CHANGED_FILES, test result:
+            New benchmark found: ${{ BENCHMARK_CHANGED_FILES }}, test result:
             $BENCH_RUN
