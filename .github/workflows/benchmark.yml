@@ -62,8 +62,10 @@ jobs:
         with:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           pullRequestOpened: |
-            New benchmark found: ${{ $BENCH_CHANGED_FILES }}, test result:
-            ${{ BENCH_RUN }}
+            New benchmark found: $BENCH_CHANGED_FILES, test result:
+            $BENCH_RUN
+            ${{ needs.benchmark.outputs.changed_files }}
+            ${{ join(steps.benchmark-run.outputs.*, '\n') }}
           pullRequestEdited: |
-            New benchmark found: ${{ $BENCH_CHANGED_FILES }}, test result:
+            New benchmark found: $BENCH_CHANGED_FILES, test result:
             $BENCH_RUN
