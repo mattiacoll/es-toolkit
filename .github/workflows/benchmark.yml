@@ -1,6 +1,12 @@
 name: Benchmark
 
-on: [pull_request]
+# on: [pull_request]
+on:
+  push:
+    branches:
+      - '*'
+    tags:
+      - 'v*.*.*'
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -38,9 +44,7 @@ jobs:
           for file in ${BENCH_CHANGED_FILES}; do
             echo "$file in BENCH_CHANGED_FILES was changed"
           done
-          for file in ${BENCH_T_CHANGED_FILES}; do
-            echo "$file in BENCH_T_CHANGED_FILES was changed"
-          done
+          echo BENCH_T_CHANGED_FILES
 
       - name: Run benchmark if test file(s) change
         id: benchmark-run
