@@ -22,6 +22,7 @@ jobs:
         uses: tj-actions/changed-files@v45
         with:
           files: benchmarks/**
+
       - name: List all changed files
         env:
           BENCH_CHANGED_FILES: ${{ steps.benchmark-files.outputs.all_changed_files }}
@@ -34,6 +35,7 @@ jobs:
   run_bench:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
       - if: steps.benchmark-files.outputs.any_changed == 'true'
       - run: corepack enable
       - uses: actions/setup-node@v4
